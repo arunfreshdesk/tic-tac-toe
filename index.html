@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+  <head>
+    <title>TIC TAC TOE</title>
+    <style>
+     
+    </style>
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+
+<div id ="box">
+  <canvas id = "canvas0"  width="50" height="50" style="border:1px solid black" onclick="canvasClicked(0)"></canvas>
+  <canvas id = "canvas1"  width="50" height="50" style="border:1px solid black" onclick="canvasClicked(1)"></canvas>
+  <canvas id = "canvas2"  width="50" height="50" style="border:1px solid black" onclick="canvasClicked(2)"></canvas><br/>
+  <canvas id = "canvas3"  width="50" height="50" style="border:1px solid black" onclick="canvasClicked(3)"></canvas>
+  <canvas id = "canvas4"  width="50" height="50" style="border:1px solid black" onclick="canvasClicked(4)"></canvas>
+  <canvas id = "canvas5"  width="50" height="50" style="border:1px solid black" onclick="canvasClicked(5)"></canvas><br/>
+  <canvas id = "canvas6"  width="50" height="50" style="border:1px solid black" onclick="canvasClicked(6)"></canvas>
+  <canvas id = "canvas7"  width="50" height="50" style="border:1px solid black" onclick="canvasClicked(7)"></canvas>
+  <canvas id = "canvas8"  width="50" height="50" style="border:1px solid black" onclick="canvasClicked(8)"></canvas>
+</div>
+
+
+    <script>
+      var socket = io();
+      var count = 0;
+      var game_array= [-1,-1,-1,-1,-1,-1,-1,-1,-1]
+      var cou;
+     
+      function canvasClicked(canvasNumber){
+         if (game_array[canvasNumber] == -1)
+            { 
+             var c=document.getElementById("canvas"+canvasNumber);
+             var ctx=c.getContext("2d");
+             ctx.font="20px Georgia";
+             game_array[canvasNumber] = count%2;
+             
+             if (count%2 == 0)
+               ctx.fillText("X",20,30);
+             else
+               ctx.fillText("O",20,30);
+
+              
+              if ((game_array[0] == 1 && game_array[1] == 1 && game_array[2] == 1) || (game_array[3] == 1 && game_array[4] == 1 && game_array[5] == 1) || (game_array[6] == 1 && game_array[7] == 1 && game_array[8] == 1) || (game_array[0] == 1 && game_array[4] == 1 && game_array[8] == 1) || (game_array[2] == 1 && game_array[4] == 1 && game_array[6] == 1))
+               { alert("Player O Wins");
+             history.go(0);
+           }
+
+              if ((game_array[0] == 0 && game_array[1] == 0 && game_array[2] == 0) || (game_array[3] == 0 && game_array[4] == 0 && game_array[5] == 0) || (game_array[6] == 0 && game_array[7] == 0 && game_array[8] == 0) || (game_array[0] == 0 && game_array[4] == 0 && game_array[8] == 0) || (game_array[2] == 0 && game_array[4] == 0 && game_array[6] == 0))
+                {alert("Player X Wins");
+                 history.go(0);
+               }
+                cou = 0;
+               for (i = 0; i < 9; i++) {
+                if (game_array[i] == -1)
+                  cou += 1;
+              }
+
+                if (cou == 0)
+                {
+                  alert("Match Tied");
+                  history.go(0);
+                }
+             socket.emit('tic tac', game_array );
+            }
+         else
+            alert("Space already occupied");
+        }
+        
+      
+
+      socket.on('tic tac', function(game_arr){
+        $('#messages').append($('<li>').text(game_arr));
+            count += 1;
+
+         for (i = 0; i < 9; i++) {
+          if (game_arr[i] != -1)
+          {
+             var c=document.getElementById("canvas"+i);
+             var ctx=c.getContext("2d");
+             ctx.font="20px Georgia";
+             if (game_arr[i] == 1)
+             { game_array[i] = 1;
+             ctx.fillText("O",20,30);
+             }
+             else {
+              game_array[i]= 0;
+             ctx.fillText("X",20,30);
+             }
+          }
+         } 
+      });
+    </script>
+  </body>
+</html>
